@@ -32,8 +32,21 @@ class Network(object):
         self.num_layers = len(sizes)
         self.sizes = sizes
         self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
+        # if sizes = [2,3,1] then
+        # [
+        #   array([[ 0.25421587],
+        #         [-1.1640546 ],
+        #         [ 0.82121619]]), 
+        #   array([[-0.05886753]])
+        # ]
         self.weights = [np.random.randn(y, x)
                         for x, y in zip(sizes[:-1], sizes[1:])]
+        # [
+        # array([[ 0.25736731, -1.01833289],
+        #     [ 0.72128593,  0.0761111 ],
+        #     [ 1.45935973,  0.23401173]]), 
+        # array([[-1.31583089,  0.22586733, -0.61481395]])
+        # ]
 
     def feedforward(self, a):
         """Return the output of the network if ``a`` is input."""
@@ -53,18 +66,19 @@ class Network(object):
         tracking progress, but slows things down substantially."""
         if test_data: n_test = len(test_data)
         n = len(training_data)
-        for j in xrange(epochs):
+        for j in range(epochs):
             random.shuffle(training_data)
+            # 切割数组[1,2,3,4,5] => [[1,2], [3,4], [5]]
             mini_batches = [
                 training_data[k:k+mini_batch_size]
-                for k in xrange(0, n, mini_batch_size)]
+                for k in range(0, n, mini_batch_size)]
             for mini_batch in mini_batches:
                 self.update_mini_batch(mini_batch, eta)
             if test_data:
-                print "Epoch {0}: {1} / {2}".format(
-                    j, self.evaluate(test_data), n_test)
+                print("Epoch {0}: {1} / {2}".format(
+                    j, self.evaluate(test_data), n_test))
             else:
-                print "Epoch {0} complete".format(j)
+                print("Epoch {0} complete".format(j))
 
     def update_mini_batch(self, mini_batch, eta):
         """Update the network's weights and biases by applying
@@ -109,7 +123,7 @@ class Network(object):
         # second-last layer, and so on.  It's a renumbering of the
         # scheme in the book, used here to take advantage of the fact
         # that Python can use negative indices in lists.
-        for l in xrange(2, self.num_layers):
+        for l in range(2, self.num_layers):
             z = zs[-l]
             sp = sigmoid_prime(z)
             delta = np.dot(self.weights[-l+1].transpose(), delta) * sp
